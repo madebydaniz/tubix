@@ -25,6 +25,7 @@ pub enum Modal {
 pub struct App {
     running: bool,
     modal: Option<Modal>,
+    notice: Option<String>,
 }
 
 impl Default for App {
@@ -32,6 +33,7 @@ impl Default for App {
         Self {
             running: true,
             modal: None,
+            notice: None,
         }
     }
 }
@@ -43,6 +45,14 @@ impl App {
 
     pub fn modal(&self) -> Option<Modal> {
         self.modal
+    }
+
+    pub fn notice(&self) -> Option<&str> {
+        self.notice.as_deref()
+    }
+
+    pub(crate) fn set_notice(&mut self, notice: Option<String>) {
+        self.notice = notice;
     }
 
     pub fn update(&mut self, command: Command) -> bool {

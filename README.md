@@ -37,9 +37,8 @@ install external tools.
 | `?` | Toggle keyboard help |
 | `Esc` | Close help |
 
-The footer's **Donate** and **Ask Question** labels are terminal hyperlinks.
-Use your terminal's link gesture, usually Cmd-click or Ctrl-click, to open them.
-Full URLs are also available in keyboard help.
+Click **Donate** or **Ask Question** in the footer to open your default browser.
+No modifier key is needed. Full URLs are also available in keyboard help.
 
 Optional diagnostics are written to the file specified by `TUBIX_LOG`.
 Logs are disabled by default and never printed over the dashboard.

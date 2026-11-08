@@ -1,6 +1,10 @@
 use std::io::{self, IsTerminal};
 
-use crossterm::{cursor::Show, execute};
+use crossterm::{
+    cursor::Show,
+    event::{DisableMouseCapture, EnableMouseCapture},
+    execute,
+};
 use ratatui::DefaultTerminal;
 
 pub struct TerminalSession {
@@ -14,7 +18,11 @@ impl TerminalSession {
         }
 
         match ratatui::try_init() {
-            Ok(terminal) => Ok(Self { terminal }),
+            Ok(terminal) => {
+                let session = Self { terminal };
+                execute!(io::stdout(), EnableMouseCapture)?;
+                Ok(session)
+            }
             Err(error) => {
                 restore();
                 Err(error)
@@ -34,6 +42,7 @@ impl Drop for TerminalSession {
 }
 
 fn restore() {
+    let _ = execute!(io::stdout(), DisableMouseCapture);
     let _ = ratatui::try_restore();
     let _ = execute!(io::stdout(), Show);
 }

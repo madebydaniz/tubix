@@ -44,15 +44,20 @@ Keyboard input maps to commands before state mutation. Global quit works over
 the help modal. The optional modal state supplies a small foundation for future
 dialogs; there is no command palette or component framework.
 
-The header centers the Tubix name and a short product description with vertical
-padding. The footer occupies one row: keyboard hints on the left, Donate and
-Ask Question hyperlinks plus the version on the right. Narrow terminals retain
-the hints and version; full URLs remain available in help.
+The header places the Tubix name and a short description on one left-aligned,
+vertically centered row. Header, body, footer and help use the terminal's default
+background, preserving the user's terminal theme and transparency.
+The footer occupies one row: keyboard hints on the left, Donate and Ask Question
+actions plus the version on the right. Narrow terminals retain the hints and
+version; full URLs remain available in help.
 
-Footer links use balanced OSC 8 sequences in ASCII character cells with explicit
-one-column widths. This keeps partial redraws, overlays and resize behavior
-compatible with Ratatui's buffer diffing without writing outside the renderer.
-Link activation uses the terminal's native gesture and requires OSC 8 support.
+Footer text uses ordinary Ratatui cells. A shared layout defines both rendering
+and mouse hit areas. A plain left click opens the corresponding URL; clicks are
+ignored while a modal is open. Mouse capture is restored on exit and errors.
+Browser launchers run as background tasks with disconnected terminal streams.
+Quick launch failures appear in the dashboard. A launcher still running after
+250 ms is handed off to a background reaper so it cannot block later clicks.
+Already-launched browsers remain independent of Tubix's shutdown.
 
 ## Shutdown and failures
 

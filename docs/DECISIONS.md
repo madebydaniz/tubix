@@ -29,6 +29,11 @@
    Conventional Commits. Bootstrap main has README only. All foundation work
    lives on `feat/project-foundation`, following maintainer branch conventions,
    with a PR to develop; integration requires maintainer approval.
+9. **Terminal-native chrome.** Use the terminal's default background and a
+   left-aligned, vertically centered header. Footer actions use plain mouse
+   clicks with shared render/hit areas, not OSC 8 sequences in buffer cells.
+   Donate uses pastel rose (`#F4A7B9`); Ask Question uses the mint brand accent
+   (`#6EE7B7`). Browser launchers run outside the rendering loop.
 
 References: [Ratatui installation](https://ratatui.rs/installation/),
 [Crossterm events](https://docs.rs/crossterm/0.29.0/crossterm/event/index.html),

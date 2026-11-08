@@ -10,17 +10,6 @@ pub fn screen(terminal: &Terminal<TestBackend>) -> String {
         .buffer()
         .content
         .iter()
-        .map(|cell| visible_symbol(cell.symbol()))
+        .map(|cell| cell.symbol())
         .collect()
-}
-
-pub fn visible_symbol(symbol: &str) -> &str {
-    if symbol.starts_with("\x1b]8;") {
-        symbol
-            .split_once("\x1b\\")
-            .and_then(|(_, text)| text.strip_suffix("\x1b]8;;\x1b\\"))
-            .unwrap_or(symbol)
-    } else {
-        symbol
-    }
 }

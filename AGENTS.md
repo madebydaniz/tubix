@@ -5,6 +5,9 @@
 - Develop on `feat/*` branches from `develop`. Open PRs targeting `develop`;
   merge only with required checks/reviews and explicit maintainer approval.
   Preserve branch protections and signing. Never force-push or rewrite history.
+- Validate and present local changes first. Wait for the maintainer to check
+  them and explicitly approve continuation before committing, pushing, or
+  creating or updating a PR.
 - Use Conventional Commits for commits and PR titles. Commit messages contain
   one imperative subject of at most 70 characters, without bodies or trailers.
   Keep PR descriptions empty unless essential context is required.
