@@ -1,0 +1,29 @@
+[package]
+name = "tubix"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.99"
+description = "A cross-platform terminal interface for managing YouTube downloads"
+license = "MIT"
+repository = "https://github.com/madebydaniz/tubix"
+readme = "README.md"
+keywords = ["tui", "terminal", "youtube"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+clap = { version = "4.6.7", features = ["derive"] }
+crossterm = { version = "0.29.0", features = ["event-stream"] }
+futures-util = { version = "0.3.34", default-features = false, features = ["std", "async-await"] }
+ratatui = { version = "0.30.2", default-features = false, features = ["crossterm_0_29"] }
+tokio = { version = "1.54.1", features = ["macros", "rt-multi-thread", "sync", "time", "signal", "process"] }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", default-features = false, features = ["fmt", "std"] }
+
+[dev-dependencies]
+tokio = { version = "1.54.1", features = ["test-util"] }
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = "warn"
