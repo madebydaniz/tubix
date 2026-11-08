@@ -44,6 +44,16 @@ Keyboard input maps to commands before state mutation. Global quit works over
 the help modal. The optional modal state supplies a small foundation for future
 dialogs; there is no command palette or component framework.
 
+The header centers the Tubix name and a short product description with vertical
+padding. The footer occupies one row: keyboard hints on the left, Donate and
+Ask Question hyperlinks plus the version on the right. Narrow terminals retain
+the hints and version; full URLs remain available in help.
+
+Footer links use balanced OSC 8 sequences in ASCII character cells with explicit
+one-column widths. This keeps partial redraws, overlays and resize behavior
+compatible with Ratatui's buffer diffing without writing outside the renderer.
+Link activation uses the terminal's native gesture and requires OSC 8 support.
+
 ## Shutdown and failures
 
 `q`, `Ctrl+C`, OS interrupt, and Unix termination signals request clean shutdown.

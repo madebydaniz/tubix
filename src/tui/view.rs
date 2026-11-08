@@ -1,5 +1,8 @@
+use std::num::NonZeroU16;
+
 use ratatui::{
     Frame,
+    buffer::CellDiffOption,
     layout::{Alignment, Constraint, Layout, Rect},
     style::{Color, Style, Stylize},
     text::{Line, Span},
@@ -28,30 +31,21 @@ pub fn render(frame: &mut Frame, app: &App) {
         return;
     }
 
-    let footer_height = if area.width >= 66 && area.height >= 10 {
+    let header_height = if area.height >= 10 {
+        5
+    } else if area.height >= 5 {
         3
     } else {
         1
     };
     let [header, body, footer] = Layout::vertical([
-        Constraint::Length(3),
+        Constraint::Length(header_height),
         Constraint::Min(0),
-        Constraint::Length(footer_height),
+        Constraint::Length(1),
     ])
     .areas(area);
 
-    frame.render_widget(
-        Paragraph::new(Line::from(vec![
-            Span::styled(" Tubix ", Style::default().fg(ACCENT).bold()),
-            Span::styled(" / your download workspace", Style::default().fg(MUTED)),
-        ]))
-        .block(
-            Block::default()
-                .borders(Borders::BOTTOM)
-                .border_style(Style::default().fg(BORDER)),
-        ),
-        header,
-    );
+    render_header(frame, header);
 
     let block = Block::bordered()
         .title(" DOWNLOADS ")
@@ -79,9 +73,28 @@ pub fn render(frame: &mut Frame, app: &App) {
     }
 }
 
+fn render_header(frame: &mut Frame, area: Rect) {
+    let block = Block::default()
+        .borders(Borders::BOTTOM)
+        .border_style(Style::default().fg(BORDER));
+    let inner = block.inner(area);
+    frame.render_widget(block, area);
+    frame.render_widget(
+        Paragraph::new(vec![
+            Line::from("Tubix").fg(ACCENT).bold(),
+            Line::from("YouTube downloads, from your terminal.").fg(MUTED),
+        ])
+        .alignment(Alignment::Center),
+        centered(inner, inner.width, 2),
+    );
+}
+
 fn render_footer(frame: &mut Frame, area: Rect) {
+    let version = format!("v{}", env!("CARGO_PKG_VERSION"));
+    let show_links = area.width >= 46;
+    let metadata_width = version.len() as u16 + if show_links { 23 } else { 1 };
     let [hints, metadata] =
-        Layout::horizontal([Constraint::Length(22), Constraint::Min(0)]).areas(area);
+        Layout::horizontal([Constraint::Min(0), Constraint::Length(metadata_width)]).areas(area);
     frame.render_widget(
         Paragraph::new(Line::from(vec![
             Span::styled(" q ", Style::default().fg(ACCENT).bold()),
@@ -92,22 +105,55 @@ fn render_footer(frame: &mut Frame, area: Rect) {
         hints,
     );
 
-    let lines = if area.height >= 3 {
-        vec![
-            Line::from(format!("v{} ", env!("CARGO_PKG_VERSION"))),
-            Line::from(format!("Donate: {DONATE_URL} ")),
-            Line::from(format!("Ask Question: {QUESTIONS_URL} ")),
-        ]
+    let version_area = if show_links {
+        let [donate, _, questions, _, version_area] = Layout::horizontal([
+            Constraint::Length(6),
+            Constraint::Length(2),
+            Constraint::Length(12),
+            Constraint::Length(2),
+            Constraint::Min(0),
+        ])
+        .areas(metadata);
+        render_link(
+            frame,
+            donate,
+            "Donate",
+            "donate",
+            DONATE_URL,
+            Color::Rgb(244, 114, 182),
+        );
+        render_link(
+            frame,
+            questions,
+            "Ask Question",
+            "questions",
+            QUESTIONS_URL,
+            Color::Rgb(250, 204, 21),
+        );
+        version_area
     } else {
-        vec![Line::from(format!(
-            "Donate · Ask Question · v{} ",
-            env!("CARGO_PKG_VERSION")
-        ))]
+        metadata
     };
     frame.render_widget(
-        Paragraph::new(lines).fg(MUTED).alignment(Alignment::Right),
-        metadata,
+        Paragraph::new(format!("{version} "))
+            .fg(MUTED)
+            .alignment(Alignment::Right),
+        version_area,
     );
+}
+
+fn render_link(frame: &mut Frame, area: Rect, label: &str, id: &str, url: &str, color: Color) {
+    if area.is_empty() {
+        return;
+    }
+    // Footer labels are ASCII; balanced per-cell links keep partial redraws independent.
+    for (offset, character) in label.chars().take(usize::from(area.width)).enumerate() {
+        let symbol = format!("\x1b]8;id={id};{url}\x1b\\{character}\x1b]8;;\x1b\\");
+        frame.buffer_mut()[(area.x + offset as u16, area.y)]
+            .set_symbol(&symbol)
+            .set_style(Style::default().fg(color).underlined())
+            .set_diff_option(CellDiffOption::ForcedWidth(NonZeroU16::MIN));
+    }
 }
 
 fn render_help(frame: &mut Frame, area: Rect) {
